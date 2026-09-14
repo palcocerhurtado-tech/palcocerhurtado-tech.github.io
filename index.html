@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pablo Alcocer Hurtado · IA, Marketing Creativo y Automatización</title>
+  <meta name="description" content="Portfolio interactivo de Pablo Alcocer Hurtado: consultor IA, marketing creativo y automatización de procesos para marcas y negocios.">
+  <meta name="theme-color" content="#070809">
+  <link rel="icon" type="image/png" href="assets/archon-mark-black-gold.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ══ BOOT LOADER ══ -->
+  <div id="loader">
+    <div class="boot-box">
+      <img src="assets/archon-mark-outline-gold.png" alt="" class="boot-mark">
+      <div class="boot-line"><span id="bootFill"></span></div>
+ <pre id="bootText" class="boot-text"></pre>
+    </div>
+  </div>
+
+  <!-- ══ PROGRESS + CURSOR ══ -->
+  <div id="progress"></div>
+  <div id="cursor"></div>
+  <div id="cursorDot"></div>
+
+  <!-- ══ NAV ══ -->
+  <header class="topbar" id="topbar">
+    <div class="wrap">
+      <nav class="nav">
+        <a class="brand" href="#top">
+          <span class="brand-icon"><img src="assets/archon-mark-black-gold.png" alt=""></span>
+          <span class="brand-name">Pablo Alcocer</span>
+        </a>
+        <div class="nav-links">
+          <a href="#positioning" data-i18n="navPos">Posicionamiento</a>
+          <a href="#projects"    data-i18n="navProj">Proyectos</a>
+          <a href="#experience"  data-i18n="navExp">Experiencia</a>
+          <a href="#terminal-sec" class="nav-term" data-i18n="navTerm">Terminal</a>
+          <a href="#contact"     data-i18n="navCont">Contacto</a>
+        </div>
+        <div class="nav-right">
+          <div class="lang-toggle" role="group" aria-label="Idioma">
+            <button id="btn-es" class="active" onclick="setLang('es')">ES</button>
+            <button id="btn-en" onclick="setLang('en')">EN</button>
+          </div>
+          <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="top">
+    <canvas id="stars"></canvas>
+    <div class="wrap hero-grid">
+      <div class="hero-left">
+        <p class="eyebrow" data-i18n="eyebrow">Pablo Alcocer Hurtado · IA + Marketing Creativo</p>
+        <h1 class="split">IA, marketing y <span class="gold-t">sistemas</span> <span class="teal-t">digitales</span> para operar mejor.</h1>
+        <p class="hero-sub" data-i18n="heroCopy">Diseño automatizaciones, productos digitales y experiencias de marca con una idea clara: que la creatividad no se quede en presentación, que funcione como sistema.</p>
+        <div class="cta-row">
+          <a href="#projects" class="btn primary magnetic" data-i18n="ctaProj">Ver proyectos</a>
+          <a href="#terminal-sec" class="btn magnetic" data-i18n="ctaTerm">Probar terminal</a>
+          <a href="https://github.com/palcocerhurtado-tech" target="_blank" class="btn magnetic">GitHub</a>
+          <a href="https://linkedin.com/in/pablo-alcocer-hurtado-a0bb573b6" target="_blank" class="btn magnetic">LinkedIn</a>
+        </div>
+        <div class="signal-strip">
+          <div class="signal-item">
+            <strong data-i18n="s1h">IA aplicada</strong>
+            <small data-i18n="s1b">Criterio comercial, no ruido técnico.</small>
+          </div>
+          <div class="signal-item">
+            <strong data-i18n="s2h">Marketing</strong>
+            <small data-i18n="s2b">Estrategia, narrativa y conversión.</small>
+          </div>
+          <div class="signal-item">
+            <strong data-i18n="s3h">Sistemas</strong>
+            <small data-i18n="s3b">Procesos, datos y producto digital.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="orbit-ring r1"></div>
+        <div class="orbit-ring r2"></div>
+        <div class="orbit-ring r3"></div>
+        <div class="hero-mark" id="heroMark">
+          <img src="assets/archon-mark-outline-gold.png" alt="Archon mark">
+        </div>
+        <div class="sat s1" data-tooltip="Archon Consultancies"><img src="assets/archon-consultancies-wordmark-white.png" alt="Archon Consultancies"></div>
+        <div class="sat s2" data-tooltip="ADV Archon"><img src="assets/adv-archon-vertical-outline.png" alt="ADV Archon"></div>
+        <div class="sat s3" data-tooltip="QuantBot"><img src="assets/quantbot-archon-bot-vertical.png" alt="QuantBot"></div>
+      </div>
+    </div>
+    <div class="scroll-hint" data-i18n="scrollHint">scroll ↓</div>
+    <div class="hero-vignette"></div>
+  </section>
+
+  <!-- ══ MARQUEE ══ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>IA aplicada</span><i>✦</i><span>Automatización</span><i>✦</i><span>Marketing creativo</span><i>✦</i><span>Next.js</span><i>✦</i><span>Python</span><i>✦</i><span>Make / n8n</span><i>✦</i><span>Claude</span><i>✦</i><span>Trading</span><i>✦</i><span>Producto digital</span><i>✦</i><span>Branding</span><i>✦</i>
+      <span>IA aplicada</span><i>✦</i><span>Automatización</span><i>✦</i><span>Marketing creativo</span><i>✦</i><span>Next.js</span><i>✦</i><span>Python</span><i>✦</i><span>Make / n8n</span><i>✦</i><span>Claude</span><i>✦</i><span>Trading</span><i>✦</i><span>Producto digital</span><i>✦</i><span>Branding</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- ══ POSITIONING ══ -->
+  <section id="positioning">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker" data-i18n="posK">Posicionamiento</p>
+          <h2 data-i18n="posH">No vendo herramientas. Diseño sistemas.</h2>
+        </div>
+        <p class="sec-copy" data-i18n="posB">Mi perfil vive en el cruce entre inteligencia artificial, marketing creativo, automatización, operaciones y creación digital. No construyo soluciones genéricas: diseño ecosistemas únicos para cada desafío operativo.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar reveal" data-tilt>
+          <span class="pillar-num">01</span>
+          <h3 data-i18n="p1h">Consultor IA</h3>
+          <p data-i18n="p1b">Aterrizo inteligencia artificial en procesos concretos, desde una automatización de emails hasta una digitalización de base de datos pasando por un organigrama automático para redes sociales.</p>
+        </div>
+        <div class="pillar reveal" data-tilt>
+          <span class="pillar-num">02</span>
+          <h3 data-i18n="p2h">Marketing creativo</h3>
+          <p data-i18n="p2b">Construyo mensajes, campañas y experiencias, todo lo necesario para el éxito rotundo de una marca.</p>
+        </div>
+        <div class="pillar reveal" data-tilt>
+          <span class="pillar-num">03</span>
+          <h3 data-i18n="p3h">Automatización</h3>
+          <p data-i18n="p3b">Conecto herramientas, datos y decisiones. Usando Make, n8n, Claude o Python automatizo procesos que ahorran tiempo y dinero a las empresas.</p>
+        </div>
+        <div class="pillar reveal" data-tilt>
+          <span class="pillar-num">04</span>
+          <h3 data-i18n="p4h">Producto digital</h3>
+          <p data-i18n="p4b">Prototipo webs, asistentes, plantillas y bots, todo lo que una empresa necesita para posicionarse como la más puntera del mercado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROJECTS ══ -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker" data-i18n="prjK">Showcase</p>
+          <h2 data-i18n="prjH">Un ecosistema de proyectos, no una lista de repos.</h2>
+        </div>
+        <p class="sec-copy" data-i18n="prjB">Cada proyecto representa una dirección: consultoría IA, automatización, producto digital o identidad.</p>
+      </div>
+
+      <div class="proj-grid">
+        <article class="pcard reveal" data-tilt data-project="archon">
+          <div class="ctop">
+            <div class="clogo dk"><img src="assets/archon-consultancies-wordmark-white.png" alt="Archon Consultancies"></div>
+            <div>
+              <p class="cat">AI · Marketing · E-commerce</p>
+              <p class="ctitle">Archon Consultancies</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d1">La marca y laboratorio de consultoría donde convierto operaciones de e-commerce en sistemas automatizados, auditables y medibles con IA.</p>
+          <div class="tags"><span class="tag">IA aplicada</span><span class="tag">Airtable</span><span class="tag">Make/n8n</span><span class="tag">Stripe</span></div>
+          <a href="https://github.com/palcocerhurtado-tech/archon-consultancies" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+
+        <article class="pcard reveal" data-tilt data-project="quantbot">
+          <div class="ctop">
+            <div class="clogo"><img src="assets/quantbot-archon-bot-mark.png" alt="QuantBot"></div>
+            <div>
+              <p class="cat">Trading · Python · Risk</p>
+              <p class="ctitle">QuantBot</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d2">Bot de trading algorítmico para Binance Spot: señales, estrategia Elliott Wave Proxy, gestión de riesgo, backtesting y modo paper/live.</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">Binance</span><span class="tag">Backtesting</span><span class="tag">Risk</span></div>
+          <a href="https://github.com/palcocerhurtado-tech/quantbot" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+
+        <article class="pcard sm reveal" data-tilt data-project="openstudio">
+          <div class="ctop">
+            <div class="clogo"><img src="assets/archon-mark-outline-gold.png" alt="OpenStudio"></div>
+            <div>
+              <p class="cat">AI Video · Creative Ops</p>
+              <p class="ctitle">OpenStudio</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d3">Plataforma de producción creativa con IA que une generación de assets, vídeo, lip sync y pipelines agentic end-to-end.</p>
+          <div class="tags"><span class="tag">Next.js</span><span class="tag">Python</span><span class="tag">Remotion</span></div>
+          <a href="https://github.com/palcocerhurtado-tech" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+
+        <article class="pcard sm reveal" data-tilt data-project="advarchon">
+          <div class="ctop">
+            <div class="clogo"><img src="assets/adv-archon-mark-black.png" alt="ADV Archon"></div>
+            <div>
+              <p class="cat">Local AI · macOS</p>
+              <p class="ctitle">ADV Archon</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d4">Asistente local-first de terminal para macOS, con memoria SQLite, contexto del sistema, Gemini/Ollama y conectores personales.</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">SQLite</span><span class="tag">LLM</span></div>
+          <a href="https://github.com/palcocerhurtado-tech/adv-archon" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+
+        <article class="pcard sm reveal" data-tilt data-project="tarjeta">
+          <div class="ctop">
+            <div class="clogo"><img src="assets/archon-mark-black-gold.png" alt="Tarjeta contacto"></div>
+            <div>
+              <p class="cat">Template · Web</p>
+              <p class="ctitle">Tarjeta contacto</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d5">Plantilla pública de tarjeta de contacto digital con QR y vCard, pensada para clonarse y publicarse fácilmente con GitHub Pages.</p>
+          <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">vCard</span></div>
+          <a href="https://github.com/palcocerhurtado-tech/tarjeta-contacto-plantilla" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+
+        <article class="pcard sm reveal" data-tilt data-project="identity">
+          <div class="ctop">
+            <div class="clogo dk"><img src="assets/archon-consultancies-wordmark-white.png" alt="palcocerhurtado-tech"></div>
+            <div>
+              <p class="cat">Identity · GitHub</p>
+              <p class="ctitle">palcocerhurtado-tech</p>
+            </div>
+          </div>
+          <p class="pdesc" data-i18n="d6">Repositorio de identidad pública en GitHub: base para mostrar perfil, enlaces, proyectos y presencia técnica personal.</p>
+          <div class="tags"><span class="tag">GitHub</span><span class="tag">Profile</span><span class="tag">Marca personal</span></div>
+          <a href="https://github.com/palcocerhurtado-tech" target="_blank" class="plink magnetic" data-i18n="vp">Ver proyecto ↗</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TERMINAL ══ -->
+  <section id="terminal-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker" data-i18n="termK">Modo hacker</p>
+          <h2 data-i18n="termH">Navega mi portfolio como en una terminal.</h2>
+        </div>
+        <p class="sec-copy" data-i18n="termB">Escribe <code>help</code> para ver los comandos. Prueba <code>projects</code>, <code>cv</code> o <code>sudo hire-me</code>.</p>
+      </div>
+      <div class="terminal reveal" id="terminal">
+        <div class="term-bar">
+          <span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span>
+          <span class="term-title">pablo@archon: ~/portfolio</span>
+        </div>
+        <div class="term-body" id="termBody"></div>
+        <form class="term-input-row" id="termForm" autocomplete="off">
+          <span class="term-prompt">➜</span>
+          <input id="termInput" type="text" spellcheck="false" aria-label="Terminal input" placeholder="type a command…">
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EXPERIENCE ══ -->
+  <section id="experience">
+    <div class="wrap">
+      <p class="kicker" data-i18n="expK">Perfil</p>
+      <h2 style="margin-bottom:44px" data-i18n="expH">Perfil, experiencia y formación</h2>
+      <div class="exp-layout">
+        <div class="exp-list">
+          <div id="expProgress"></div>
+          <div class="exp-item reveal">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-co">Archon Consultancies / ZC Publicidad Digital</div>
+              <div class="exp-role" data-i18n="r1">Consultor y auditor de IA · 2026–presente</div>
+              <div class="exp-desc" data-i18n="e1">Diseño e implementación de flujos de IA aplicada a operaciones e-commerce.</div>
+            </div>
+          </div>
+          <div class="exp-item reveal">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-co">Cegos</div>
+              <div class="exp-role" data-i18n="r2">Colaborador digital · 2025–2026</div>
+              <div class="exp-desc" data-i18n="e2">Apoyo en proyectos de formación y contenido digital.</div>
+            </div>
+          </div>
+          <div class="exp-item reveal">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-co">Almacenes Manuel Martínez S.A.</div>
+              <div class="exp-role" data-i18n="r3">Atención al público · 2022–2024</div>
+              <div class="exp-desc" data-i18n="e3">Gestión de clientes y logística de almacén.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="stats-row reveal">
+            <div class="stat">
+              <span class="stat-num" data-count="6">0</span><span class="stat-plus">+</span>
+              <p class="stat-label" data-i18n="st1">Proyectos construidos</p>
+            </div>
+            <div class="stat">
+              <span class="stat-num" data-count="8">0</span><span class="stat-plus">+</span>
+              <p class="stat-label" data-i18n="st2">Certificaciones</p>
+            </div>
+            <div class="stat">
+              <span class="stat-num" data-count="3">0</span><span class="stat-plus">+</span>
+              <p class="stat-label" data-i18n="st3">Marcas creadas</p>
+            </div>
+          </div>
+          <div class="edu-grid reveal">
+            <div class="edu-card" data-i18n="edu1">Grado Superior Marketing y Publicidad</div>
+            <div class="edu-card" data-i18n="edu2">Bachillerato Ciencias Sociales</div>
+            <div class="edu-card" data-i18n="edu3">Halifax High School, Canadá</div>
+          </div>
+          <div class="cert-block reveal">
+            <p class="cert-title" data-i18n="certH">Certificaciones</p>
+            <div class="cert-tags">
+              <span class="cert-tag">Claude 101</span>
+              <span class="cert-tag">Claude Code 101</span>
+              <span class="cert-tag">Cowork</span>
+              <span class="cert-tag">Subagents</span>
+              <span class="cert-tag">Bedrock</span>
+              <span class="cert-tag">Google Ads</span>
+              <span class="cert-tag">Meta Ads</span>
+              <span class="cert-tag">GA4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ══ -->
+  <section id="contact" class="contact-sec">
+    <canvas id="stars2"></canvas>
+    <div class="wrap">
+      <p class="eyebrow center" data-i18n="ctK">Contacto</p>
+      <h2 data-i18n="ctH">Si tienes una idea, un proceso roto o un proyecto que necesita forma digital, podemos convertirlo en sistema.</h2>
+      <div class="contact-links">
+        <a href="mailto:palcocerhurtado@gmail.com" class="contact-btn magnetic"><span data-i18n="ctMail">Email</span><em>palcocerhurtado@gmail.com</em></a>
+        <a href="https://linkedin.com/in/pablo-alcocer-hurtado-a0bb573b6" target="_blank" class="contact-btn magnetic"><span>LinkedIn</span><em>/in/pablo-alcocer-hurtado</em></a>
+        <a href="https://github.com/palcocerhurtado-tech" target="_blank" class="contact-btn magnetic"><span>GitHub</span><em>palcocerhurtado-tech</em></a>
+        <button class="contact-btn magnetic" id="copyMail"><span data-i18n="ctCopy">Copiar email</span><em data-i18n="ctClick">click para copiar</em></button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      © 2026 Pablo Alcocer Hurtado ·
+      <a href="https://archonconsultancies.com" target="_blank">archonconsultancies.com</a> ·
+      <span data-i18n="built">Hecho con IA, café y automatizaciones</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

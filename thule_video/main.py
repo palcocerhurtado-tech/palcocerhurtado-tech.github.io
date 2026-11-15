@@ -22,7 +22,7 @@ sys.path.insert(0, HERE)
 import utils as K  # noqa: E402  (fija 1080×1920 @ 30 fps)
 from manim import (  # noqa: E402
     BOLD, DOWN, LEFT, ORIGIN, PI, RIGHT, TAU, UP,
-    AnimationGroup, Arrow, Create, Dot, FadeIn, FadeOut, Flash, LaggedStart, Line,
+    RESAMPLING_ALGORITHMS, AnimationGroup, Arrow, Create, Group, ImageMobject, Dot, FadeIn, FadeOut, Flash, LaggedStart, Line,
     Polygon, RoundedRectangle, Text, Transform, UpdateFromAlphaFunc, ValueTracker, VGroup,
     always_redraw, config, smooth,
 )
@@ -91,6 +91,50 @@ def starfield(n=90, seed=3):
         g.add(p)
     g.set_z_index(-40)
     return g
+
+
+PHOTOS = os.path.join(HERE, "photos")
+
+
+def photo_card(name, label, max_w=7.2, max_h=5.2, chip_color=GOLD):
+    """Foto del usuario como «expediente»: marco biselado low-poly + etiqueta."""
+    img = ImageMobject(os.path.join(PHOTOS, f"{name}.jpg"))
+    img.set_resampling_algorithm(RESAMPLING_ALGORITHMS["bicubic"])
+    aspect = img.height / img.width
+    img.set(width=min(max_w, max_h / aspect))
+    w, h, b = img.width, img.height, 0.16
+    # bisel facetado: anillo de triángulos entre el borde interior y el exterior
+    inner = [(-w / 2, h / 2), (w / 2, h / 2), (w / 2, -h / 2), (-w / 2, -h / 2)]
+    outer = [(-w / 2 - b, h / 2 + b), (w / 2 + b, h / 2 + b), (w / 2 + b, -h / 2 - b),
+             (-w / 2 - b, -h / 2 - b)]
+    bevel = VGroup()
+    side_k = [1.15, 0.55, 0.3, 0.8]          # arriba, derecha, abajo, izquierda (luz arriba-izq.)
+    for i in range(4):
+        a0, a1 = np.array([*inner[i], 0]), np.array([*inner[(i + 1) % 4], 0])
+        o0, o1 = np.array([*outer[i], 0]), np.array([*outer[(i + 1) % 4], 0])
+        m = max(2, int(np.linalg.norm(a1 - a0) / 0.45))
+        for t in range(m):
+            p, q = a0 + (a1 - a0) * t / m, a0 + (a1 - a0) * (t + 1) / m
+            P, Q = o0 + (o1 - o0) * t / m, o0 + (o1 - o0) * (t + 1) / m
+            for tri, dk in (((p, q, Q), 0.08), ((p, Q, P), -0.06)):
+                bevel.add(Polygon(*tri, stroke_width=0.8, stroke_color=shade(STEEL, 1.4),
+                                  stroke_opacity=0.5)
+                          .set_fill(shade(STEEL, side_k[i] + dk + 0.05 * ((t % 3) - 1)), 1))
+    t = mono(label, 44, INK)
+    t.set(width=min(t.width, w + 2 * b - 0.4))
+    chip = VGroup(RoundedRectangle(width=t.width + 0.4, height=t.height + 0.26, corner_radius=0.08,
+                                   stroke_width=0).set_fill(chip_color, 1), t)
+    t.move_to(chip[0])
+    chip.next_to(bevel, DOWN, buff=0.1)
+    card = Group(bevel, img, chip)
+    card.img = img
+    return card
+
+
+def slow_zoom(rate=0.012):
+    def u(m, dt):
+        m.scale(1 + rate * dt)
+    return u
 
 
 class ThuleScene(KabalaScene):
@@ -189,13 +233,18 @@ def block0(s):
     s.until(8.0)
     # El sol se hunde en el fondo; emergen las cinco médiums
     s.add(s.bsun)
-    meds = VGroup(*[medium(seed=i, scale=0.42) for i in range(5)])
-    meds.arrange(RIGHT, buff=0.15).move_to([0, Y_VIS - 0.2, 0])
-    meds[2].scale(1.25).set_z_index(2)
+    files = [("thule_emblem", "EMBLEMA THULE · 1919", -1.25, 0.75, 0.10),
+             ("orsic", "ATRIBUIDA A MARIA ORSIC", 1.3, 0.55, -0.09),
+             ("ceremony", "ESCENA RECREADA", -0.6, -0.55, -0.05),
+             ("diagram", "DIAGRAMA OCULTISTA", 1.2, -0.45, 0.07)]
+    cards = Group(*[photo_card(n, l, max_w=4.6, max_h=3.6).rotate(r).move_to([x, Y_VIS + y, 0])
+                    for n, l, x, y, r in files])
     s.run(FadeOut(sun, scale=1.6), UpdateFromAlphaFunc(s.bsun, lambda m, a: set_alpha(m, 0.22 * a)),
-          LaggedStart(*[FadeIn(m, shift=UP * 0.8) for m in meds], lag_ratio=0.15),
-          s.caption("Esto es lo que los archivos desclasificados ocultan."), rt=1.6)
-    s.run(*[m.eyes.animate.set_fill(GOLD, 1) for m in meds], rt=0.4)
+          FadeIn(cards[0], shift=DOWN * 0.6, scale=1.2),
+          s.caption("Esto es lo que los archivos desclasificados ocultan."), rt=1.0)
+    for c in cards[1:]:
+        s.run(FadeIn(c, shift=DOWN * 0.6, scale=1.2), rt=0.75)
+    meds = cards
     s.focus = meds
     s.until(12.0)
     # CTA de apertura
@@ -224,20 +273,23 @@ def interpolate(c1, c2, a):
 # ═════════════════════════════════════════════════════════════════════════════
 def block1(s):
     s.transition(1)
-    hm = hammer().scale(0.9).move_to([0, Y_VIS + 0.2, 0])
+    hm = photo_card("thule_emblem", "EMBLEMA DE LA SOCIEDAD THULE · 1919", max_h=3.5)
+    hm.move_to([0, Y_VIS + 0.35, 0])
     s.run(s.hook("1918. Múnich. Nace una sociedad secreta.", accents={"secreta.": GOLD}),
-          build_in(hm, 0.004), rt=2.0)
+          FadeIn(hm, shift=UP * 0.4, scale=0.9), rt=2.0)
+    hm.add_updater(slow_zoom())
     s.focus = hm
     vt = ValueTracker(0)
     num = always_redraw(lambda: Text(f"{int(vt.get_value()):,}".replace(",", "."),
-                                     font=FONT_SANS, font_size=px(150), weight=BOLD,
-                                     color=CYAN).move_to([0, -1.75, 0]))
+                                     font=FONT_SANS, font_size=px(120), weight=BOLD,
+                                     color=CYAN).move_to([0, -2.05, 0]).set_z_index(5))
     s.add(num)
     s.run(vt.animate.set_value(2000), s.caption("Sociedad Thule: 2.000 miembros.",
                                                 font=FONT_SANS, accents={"thule:": GOLD}),
           rt=2.0)
     s.until(25.0)
     num.clear_updaters()
+    hm.clear_updaters()
     # Mapa de Alemania + Múnich
     de = low_poly(resample(GERMANY, 0.35), "#2A3A52", seed=8, rings=2, dome=0.5)
     de.scale(1.35).move_to([0, Y_VIS, 0])
@@ -257,7 +309,12 @@ def block1(s):
                     accents={"sebottendorf.": GOLD, "racismo.": RED}), rt=1.3)
     s.run(Flash(pin_pt, color=GOLD, flash_radius=0.6, num_lines=14), rt=0.6)
     s.focus = de
-    s.until(35.0)
+    s.until(30.0)
+    cer = photo_card("ceremony", "ESCENA RECREADA", max_w=7.8).move_to([0, Y_VIS + 0.3, 0])
+    s.swap([de, pin, lab], [FadeIn(cer, scale=1.1)], rt=0.7)
+    cer.add_updater(slow_zoom(0.015))
+    s.until(35.0, focus=cer)
+    cer.clear_updaters()
     # La isla de Thule emerge del mar
     sea = VGroup()
     for i in range(14):
@@ -270,7 +327,7 @@ def block1(s):
     isl = low_poly(thule_island(), ICE, seed=5, rings=2, jitter=0.12, dome=1.0)
     isl.scale(0.95).move_to([0, Y_VIS + 0.4, 0])
     tl = mono("THULE", 64, GOLD).next_to(isl, UP, buff=0.25)
-    s.swap([de, pin, lab], [FadeIn(sea, shift=UP * 0.3)], rt=0.8)
+    s.swap([cer], [FadeIn(sea, shift=UP * 0.3)], rt=0.8)
     s.run(FadeIn(isl, shift=UP * 1.2), FadeIn(tl),
           s.caption("Buscaban el origen de la raza aria.", accents={"aria.": GOLD}), rt=1.6)
     s.focus = isl
@@ -294,12 +351,12 @@ def cuneiform(rng, n=18):
 
 def block2(s):
     s.transition(2)
-    m = medium(seed=21, scale=1.15).move_to([0, Y_VIS - 0.3, 0])
+    m = photo_card("orsic", "ATRIBUIDA A MARIA ORSIC", max_h=4.0).move_to([0, Y_VIS + 0.35, 0])
     s.run(s.hook("1919. Una médium empieza a escribir en sumerio.",
-                 accents={"sumerio.": GOLD}), s.legend_chip(), build_in(m, 0.004), rt=2.0)
-    s.run(m.eyes.animate.set_fill(GOLD, 1).scale(1.4), rt=0.4)
+                 accents={"sumerio.": GOLD}), s.legend_chip(), FadeIn(m, shift=UP * 0.4), rt=2.0)
+    m.add_updater(slow_zoom(0.01))
     glyphs = cuneiform(s.rng).set_z_index(5)
-    head = m.eyes.get_center()
+    head = m.img.get_center() + UP * 0.9
     for gph in glyphs:
         gph.move_to(head)
     s.run(LaggedStart(*[g.animate.move_to([s.rng.uniform(-3.6, 3.6), s.rng.uniform(1.5, 3.2), 0])
@@ -308,10 +365,18 @@ def block2(s):
                     accents={"orsic.": GOLD, "vril": MYSTIC}), rt=1.6)
     names = VGroup(mono("MARIA ORSIC", 56, GOLD),
                    mono("SIGRUN · TRAUTE · GUDRUN · HEIKE", 40, BONE)).arrange(DOWN, buff=0.15)
-    names.move_to([0, -1.95, 0])
+    names.move_to([0, 3.75, 0])
     s.run(s.drop_hook(), FadeIn(names, shift=UP * 0.2), rt=0.6)
-    s.focus = m
-    s.until(55.0)
+    s.until(55.0, focus=glyphs)
+    m.clear_updaters()
+    doc = photo_card("haunebu_doc", "DOCUMENTO «HAUNEBU» · AUTENTICIDAD NO PROBADA",
+                     max_h=5.0, chip_color=RED).move_to([0, Y_VIS + 0.1, 0])
+    s.swap([m, glyphs, names], [FadeIn(doc, shift=UP * 0.4),
+                                s.caption("Instrucciones técnicas para una nave de disco.",
+                                          font=FONT_SANS)], rt=0.9)
+    doc.add_updater(slow_zoom(0.015))
+    s.until(59.2, focus=doc)
+    doc.clear_updaters()
     # La nave: primero alambre, luego sólida; Aldebarán al fondo
     star = low_poly([(0.5 * np.cos(a) * (1 if i % 2 == 0 else 0.42),
                       0.5 * np.sin(a) * (1 if i % 2 == 0 else 0.42))
@@ -322,7 +387,7 @@ def block2(s):
     solid = haunebu(0.95, center=[0, Y_VIS - 0.4, 0])
     beam = VGroup(*[Dot([2.9 - 2.9 * t, 3.0 - (3.4) * t, 0], radius=0.035, color="#E07B39")
                     for t in np.linspace(0.05, 0.95, 14)])
-    s.swap([m, glyphs, names], [build_in(star), FadeIn(al)], rt=0.8)
+    s.swap([doc], [build_in(star), FadeIn(al)], rt=0.8)
     s.run(LaggedStart(*[FadeIn(d, scale=2) for d in beam], lag_ratio=0.1),
           Create(wire, lag_ratio=0.01),
           s.caption("Transmisiones de Aldebarán: 64 años luz.", font=FONT_SANS,
@@ -407,8 +472,14 @@ def antarctica():
 def block4(s):
     s.transition(4)
     ice = antarctica()
+    snap = photo_card("saucer_photo", "RECREACIÓN · NO ES UNA FOTO REAL", max_h=4.9,
+                      chip_color=RED).move_to([0, Y_VIS + 0.05, 0])
     s.run(s.hook("1945. Los nazis huyen al hielo.", accents={"hielo.": CYAN}), s.legend_chip(),
-          build_in(ice, 0.002), rt=2.2)
+          FadeIn(snap, scale=1.1), rt=1.5)
+    snap.add_updater(slow_zoom(0.015))
+    s.until(109.6, focus=snap)
+    snap.clear_updaters()
+    s.swap([snap], [build_in(ice, 0.002)], rt=1.2)
     c = ice.get_center()
     p = c + np.array([*NEUSCHWABENLAND, 0]) * 1.15
     dome = haunebu(0.35, center=p + np.array([0, -0.1, 0]), wire=True)
@@ -464,17 +535,19 @@ def block5(s):
             part.add_updater(part.spin_updater(0.6 + 0.3 * i))
     s.run(s.caption("Haunebu: de 25 a 40 metros.", font=FONT_SANS), rt=1.0)
     s.until(140.0, focus=stars)
-    lines = VGroup(*[Line([x, y, 0], [x - 2.5, y, 0], stroke_width=3, color=CYAN,
-                          stroke_opacity=0.6) for x, y in
-                     [(-0.6, 0.4), (-0.4, -0.2), (-0.8, 0.8), (-0.5, 1.1), (-0.7, -0.5)]])
-    s.run(s.drop_hook(), Create(lines, lag_ratio=0.1), move_disc(ships[1], RIGHT * 0.5),
-          s.caption("Haunebu-II: 6.000 km/h.", font=FONT_SANS, size=66,
-                    accents={"haunebu-ii:": GOLD}), rt=1.2)
-    s.until(145.0, focus=stars)
-    # Blindaje Victalen
     for h in ships:
         for part in [h.body, *h.pods]:
             part.clear_updaters()
+    info = photo_card("fleet_lion", "INFOGRAFÍA MODERNA DE LA LEYENDA", max_w=7.8)
+    info.move_to([0, Y_VIS + 0.3, 0])
+    s.swap([ships], [FadeIn(info, scale=1.1), s.drop_hook(),
+                     s.caption("Haunebu-II: 6.000 km/h.", font=FONT_SANS, size=66,
+                               accents={"haunebu-ii:": GOLD})], rt=1.2)
+    info.add_updater(slow_zoom(0.02))
+    s.until(144.6, focus=info)
+    info.clear_updaters()
+    lines = info
+    # Blindaje Victalen
     plate = victalen().move_to([0, Y_VIS, 0])
 
     def shimmer(m, dt):
@@ -482,17 +555,29 @@ def block5(s):
         for t in m:
             t.set_fill(opacity=0.45 + 0.4 * (0.5 + 0.5 * np.sin(m.t_ * 2.2 + t.ph)))
 
-    s.swap([ships, lines], [LaggedStart(*[FadeIn(t, scale=0.2) for t in plate], lag_ratio=0.002)],
+    s.swap([lines], [LaggedStart(*[FadeIn(t, scale=0.2) for t in plate], lag_ratio=0.002)],
            rt=1.6)
     plate.add_updater(shimmer)
     lab = mono("VICTALEN", 72, CYAN).move_to([0, 3.45, 0])
     s.run(FadeIn(lab), s.caption("Blindaje «Victalen»: humo congelado.",
                                  accents={"«victalen»:": CYAN}), rt=1.2)
-    s.until(155.0, focus=stars)
+    s.until(149.6, focus=stars)
     plate.clear_updaters()
+    # Planos e infografías que circulan
+    stack = Group(
+        photo_card("drawings", "DIBUJOS «HAUNEBU» · SIN ORIGINAL", max_w=5.2, max_h=3.9,
+                   chip_color=RED).rotate(0.07).move_to([-0.9, Y_VIS + 1.35, 0]),
+        photo_card("fleet_fs", "INFOGRAFÍA MODERNA", max_w=5.4, max_h=3.6)
+        .rotate(-0.06).move_to([0.8, Y_VIS + 0.15, 0]),
+        photo_card("fleet_lion2", "INFOGRAFÍA MODERNA", max_w=5.0, max_h=2.9)
+        .rotate(0.04).move_to([-0.2, Y_VIS - 0.85, 0]))
+    s.swap([plate, lab], [FadeIn(stack[0], shift=DOWN * 0.5)], rt=0.6)
+    s.run(FadeIn(stack[1], shift=DOWN * 0.5), rt=0.6)
+    s.run(FadeIn(stack[2], shift=DOWN * 0.5), rt=0.6)
+    s.until(155.0, focus=stack)
     # Las naves se desintegran en partículas
     disc = haunebu(1.0, center=[0, Y_VIS, 0])
-    s.swap([plate, lab], [FadeIn(disc, scale=0.7)], rt=0.8)
+    s.swap([stack], [FadeIn(disc, scale=0.7)], rt=0.8)
     s.run(shatter(disc, s.rng),
           s.caption("Tecnología de otro mundo. O de otro tiempo.",
                     accents={"mundo.": CYAN, "tiempo.": GOLD}), rt=3.0)
@@ -506,6 +591,18 @@ def block6(s):
     s.run(*a, UpdateFromAlphaFunc(s.bsun, lambda m, t: set_alpha(m, 0.22 + 0.5 * t)), rt=1.0)
     s.run(s.caption("Thule. Vril. Sol Negro. Base 211. Una pregunta.", font=FONT_SANS,
                     accents={"211.": RED, "pregunta.": GOLD}, rt=1.8), rt=1.8)
+    names = ["thule_emblem", "orsic", "ceremony", "saucer_photo", "haunebu_doc",
+             "drawings", "fleet_fs", "fleet_lion", "diagram"]
+    tiles = Group()
+    for n in names:
+        im = ImageMobject(os.path.join(PHOTOS, f"{n}.jpg"))
+        im.set(height=1.9)
+        if im.width > 2.6:
+            im.set(width=2.6)
+        tiles.add(im)
+    tiles.arrange_in_grid(rows=3, cols=3, buff=0.15).move_to([0, Y_VIS, 0]).set_z_index(-10)
+    s.run(LaggedStart(*[FadeIn(t, scale=0.7) for t in tiles], lag_ratio=0.1), rt=1.4)
+    s.run(tiles.animate.set_opacity(0.35), rt=0.4)
     case = stamp("CASO CERRADO", BLOOD, 120).move_to([0, Y_VIS, 0]).set_z_index(30)
     s.run(FadeIn(case, scale=2.2), rt=0.4)
     s.glitch(0.2, strength=0.25)
@@ -530,7 +627,7 @@ def block6(s):
     ask = kinetic_text("¿Crees que la base sigue ahí? Dímelo.", size=48, font=FONT_SERIF,
                        accents={"dímelo.": GOLD}, max_width=6.0)
     ask.next_to(bub, LEFT, buff=0.3)
-    s.run(s.drop_caption(), FadeOut(case, scale=0.7), UpdateFromAlphaFunc(sun, to_wire),
+    s.run(s.drop_caption(), FadeOut(case, scale=0.7), FadeOut(tiles), UpdateFromAlphaFunc(sun, to_wire),
           FadeIn(banner), reveal_words(cta, 1.2), rt=1.4)
     arrow.add_updater(blink_updater(7))
     s.add(arrow)

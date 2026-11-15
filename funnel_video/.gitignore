@@ -1,0 +1,8 @@
+assets/
+evidence_src/
+audio/
+narration.mp3
+media/
+output_final.mp4
+__pycache__/
+!*.py

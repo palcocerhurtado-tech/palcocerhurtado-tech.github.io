@@ -1,0 +1,7 @@
+media/
+audio/
+narration.mp3
+output_final.mp4
+__pycache__/
+*.pyc
+!*.py

@@ -1,0 +1,96 @@
+{
+  "total": 180.0,
+  "voice": "es-ES-AlvaroNeural",
+  "rate": "+0%",
+  "atempo": 0.98732,
+  "beats": [
+    {
+      "key": "b0_hook",
+      "start": 0.0
+    },
+    {
+      "key": "b0_counter",
+      "start": 4.322
+    },
+    {
+      "key": "b0_files",
+      "start": 10.716
+    },
+    {
+      "key": "b0_cta",
+      "start": 11.916
+    },
+    {
+      "key": "b1_guerra",
+      "start": 13.678
+    },
+    {
+      "key": "b1_filesa",
+      "start": 25.541
+    },
+    {
+      "key": "b1_fondos",
+      "start": 36.797
+    },
+    {
+      "key": "b1_gal",
+      "start": 44.406
+    },
+    {
+      "key": "b2_ere",
+      "start": 53.787
+    },
+    {
+      "key": "b2_chaves",
+      "start": 59.927
+    },
+    {
+      "key": "b2_closed",
+      "start": 73.183
+    },
+    {
+      "key": "b3_marea",
+      "start": 76.475
+    },
+    {
+      "key": "b3_faffe",
+      "start": 90.022
+    },
+    {
+      "key": "b4_koldo",
+      "start": 101.733
+    },
+    {
+      "key": "b4_david",
+      "start": 122.281
+    },
+    {
+      "key": "b4_begona",
+      "start": 130.383
+    },
+    {
+      "key": "b4_open",
+      "start": 134.359
+    },
+    {
+      "key": "b5_sum",
+      "start": 145.171
+    },
+    {
+      "key": "b5_stamps",
+      "start": 156.679
+    },
+    {
+      "key": "b5_open",
+      "start": 161.794
+    },
+    {
+      "key": "b6_recap",
+      "start": 164.428
+    },
+    {
+      "key": "b6_cta",
+      "start": 172.492
+    }
+  ]
+}

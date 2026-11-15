@@ -1,0 +1,116 @@
+{
+  "total": 180.0,
+  "voice": "es-ES-AlvaroNeural",
+  "rate": "+22%",
+  "atempo": 1.00396,
+  "beats": [
+    {
+      "key": "b0_helix",
+      "start": 0.0
+    },
+    {
+      "key": "b0_mutate",
+      "start": 2.103
+    },
+    {
+      "key": "b0_map",
+      "start": 6.834
+    },
+    {
+      "key": "b0_cta",
+      "start": 8.034
+    },
+    {
+      "key": "b1_alliance",
+      "start": 9.234
+    },
+    {
+      "key": "b1_draco",
+      "start": 17.452
+    },
+    {
+      "key": "b1_war",
+      "start": 25.204
+    },
+    {
+      "key": "b1_genocide",
+      "start": 32.291
+    },
+    {
+      "key": "b2_continents",
+      "start": 35.556
+    },
+    {
+      "key": "b2_extinction",
+      "start": 44.094
+    },
+    {
+      "key": "b2_treaty",
+      "start": 51.018
+    },
+    {
+      "key": "b3_anunnaki",
+      "start": 62.632
+    },
+    {
+      "key": "b3_sapiens",
+      "start": 66.75
+    },
+    {
+      "key": "b3_gold",
+      "start": 71.388
+    },
+    {
+      "key": "b3_enoc",
+      "start": 75.261
+    },
+    {
+      "key": "b4_weishaupt",
+      "start": 83.359
+    },
+    {
+      "key": "b4_obelisks",
+      "start": 93.34
+    },
+    {
+      "key": "b4_nobility",
+      "start": 101.545
+    },
+    {
+      "key": "b4_papa",
+      "start": 108.021
+    },
+    {
+      "key": "b5_orsic",
+      "start": 113.45
+    },
+    {
+      "key": "b5_haunebu",
+      "start": 124.136
+    },
+    {
+      "key": "b5_thule",
+      "start": 134.362
+    },
+    {
+      "key": "b5_base",
+      "start": 139.459
+    },
+    {
+      "key": "b6_dumbs",
+      "start": 149.119
+    },
+    {
+      "key": "b6_awaken",
+      "start": 160.763
+    },
+    {
+      "key": "b6_recap",
+      "start": 166.493
+    },
+    {
+      "key": "b6_cta",
+      "start": 171.524
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "total": 180.0,
   "voice": "es-ES-AlvaroNeural",
-  "rate": "+0%",
-  "atempo": 0.98732,
+  "rate": "-19%",
+  "atempo": 0.99126,
   "beats": [
     {
       "key": "b0_hook",
@@ -10,87 +10,87 @@
     },
     {
       "key": "b0_counter",
-      "start": 4.322
+      "start": 3.155
     },
     {
       "key": "b0_files",
-      "start": 10.716
+      "start": 7.895
     },
     {
       "key": "b0_cta",
-      "start": 11.916
+      "start": 9.095
     },
     {
       "key": "b1_guerra",
-      "start": 13.678
+      "start": 10.479
     },
     {
       "key": "b1_filesa",
-      "start": 25.541
+      "start": 22.478
     },
     {
       "key": "b1_fondos",
-      "start": 36.797
+      "start": 34.755
     },
     {
       "key": "b1_gal",
-      "start": 44.406
+      "start": 42.795
     },
     {
       "key": "b2_ere",
-      "start": 53.787
+      "start": 53.075
     },
     {
       "key": "b2_chaves",
-      "start": 59.927
+      "start": 59.546
     },
     {
       "key": "b2_closed",
-      "start": 73.183
+      "start": 73.723
     },
     {
       "key": "b3_marea",
-      "start": 76.475
+      "start": 76.691
     },
     {
       "key": "b3_faffe",
-      "start": 90.022
+      "start": 90.741
     },
     {
       "key": "b4_koldo",
-      "start": 101.733
+      "start": 103.785
     },
     {
       "key": "b4_david",
-      "start": 122.281
+      "start": 125.213
     },
     {
       "key": "b4_begona",
-      "start": 130.383
+      "start": 133.584
     },
     {
       "key": "b4_open",
-      "start": 134.359
+      "start": 137.382
     },
     {
       "key": "b5_sum",
-      "start": 145.171
+      "start": 149.053
     },
     {
       "key": "b5_stamps",
-      "start": 156.679
+      "start": 158.993
     },
     {
       "key": "b5_open",
-      "start": 161.794
+      "start": 163.144
     },
     {
       "key": "b6_recap",
-      "start": 164.428
+      "start": 165.257
     },
     {
       "key": "b6_cta",
-      "start": 172.492
+      "start": 171.935
     }
   ]
 }

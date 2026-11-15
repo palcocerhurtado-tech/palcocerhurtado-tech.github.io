@@ -33,8 +33,10 @@ python narration.py
 
 - Genera `audio/bloque_0.mp3` … `audio/bloque_6.mp3` con
   `edge-tts --voice "es-ES-AlvaroNeural" --text "FRASE" --write-media "bloque_X.mp3"`.
-- Mide cada bloque y lo vuelve a sintetizar con `--rate=±N%` hasta que llena su ventana
-  (15/30/30/30/30/30/15 s) menos 0,35 s de respiración, así que no quedan huecos largos.
+- Recorta el silencio que edge-tts deja al principio y al final de cada clip, mide cada bloque y lo
+  vuelve a sintetizar con `--rate=±N%` hasta que llena su ventana (15/30/30/30/30/30/15 s) menos
+  0,25 s. Resultado comprobado: ninguna pausa supera 1,2 s en todo el video. Reintenta
+  automáticamente si edge-tts falla por la red.
 - Coloca cada bloque en su segundo exacto (0, 15, 45, 75, 105, 135, 165) y exporta
   **`narration.mp3` de 180 s**. El informe de tiempos queda en `audio/timing.json`.
 - Si hay proxy: `export EDGE_TTS_PROXY=http://host:puerto`.
@@ -93,8 +95,8 @@ ffmpeg -i media/videos/main/1920p30/FullVideo.mp4 -i narration.mp3 -c:v copy -c:
 
 - La narración de §5 se usa tal cual, con añadidos tomados **literalmente de §1** para que todos
   los datos aparezcan en video o en voz: *hekhalot*, la definición de Cábala, «Árbol Infernal»,
-  «pieles», Durán/Zenit, «clave simbólica» y el nombre del árbol invertido (Qlifot), que cumple
-  la promesa del CTA de apertura.
+  «pieles», Durán/Zenit y «clave simbólica». El cierre usa tu texto original (con el añadido sobre
+  Qlifot no cabía en 15 s); la promesa del CTA se cumple en pantalla con la etiqueta «QLIFOT».
 - En pantalla aparecen como etiquetas: Éxodo 14:19-21, curación · protección, Kabbalah Ma’asit,
   kameot, Sefer Raziel HaMalakh, Hashem · Adonai y R∴E∴A∴A∴.
 - El texto de §4/§5 que escribiste incluye algunos elementos que no están en la tabla de §1 y que

@@ -20,18 +20,19 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 VOICE = "es-ES-AlvaroNeural"
 TOTAL = 180.0
-TAIL = 0.35            # respiración al final de cada bloque (s)
-MAX_GAP = 1.2          # hueco máximo tolerado antes de ralentizar (s)
+TAIL = 0.25            # respiración al final de cada bloque (s)
+MAX_GAP = 0.7          # hueco máximo tolerado antes de ralentizar (s)
 RATE_MIN, RATE_MAX = -15, 35
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, "audio")
 
 # (inicio, fin, texto) — el texto base es el de §5; se añadieron solo datos
 # literales de §1 (hekhalot, definición de Cábala, «Árbol Infernal», «pieles»,
-# Durán/Zenit, «clave simbólica», y el nombre prometido del árbol: Qlifot).
+# Durán/Zenit y «clave simbólica»). El bloque 6 es el texto original de §5.
 BLOCKS = [
     (0, 15,
      "Hay un código que la humanidad olvidó. Un sistema que dice que el universo fue "
@@ -76,8 +77,8 @@ BLOCKS = [
      "impregnado de simbolismo cabalístico. Desde Pico della Mirandola hasta Robert "
      "Fludd, siglos de tradición oculta confluyen en la masonería."),
     (165, 180,
-     "Diez sefirot. Veintidós senderos. Setenta y dos nombres. Y un árbol invertido con "
-     "nombre propio: Qlifot. Una pregunta: ¿sigue viva la Cábala hoy? Si quieres que "
+     "Diez sefirot. Veintidós senderos. Setenta y dos nombres. Una pregunta: ¿sigue viva "
+     "la Cábala hoy? Si quieres que "
      "analice el Sefer Yetzirah, sígueme. Y dime en comentarios: ¿crees que la Cábala "
      "sigue siendo un código oculto?"),
 ]
@@ -102,7 +103,28 @@ def tts(text: str, path: str, rate: int = 0):
         cmd.append(f"--rate={rate:+d}%")
     if os.environ.get("EDGE_TTS_PROXY"):
         cmd += ["--proxy", os.environ["EDGE_TTS_PROXY"]]
-    subprocess.run(cmd, check=True)
+    for attempt in range(4):                 # reintentos ante cortes de red
+        if subprocess.run(cmd).returncode == 0 and os.path.getsize(path) > 0:
+            return
+        time.sleep(2 * (attempt + 1))
+    sys.exit(f"ERROR: edge-tts falló 4 veces generando {os.path.basename(path)}.")
+
+
+def trim_silence(path: str):
+    """Recorta el silencio que edge-tts deja al inicio y al final de cada clip
+    (≈0.5 s por lado), para que no se acumulen pausas entre bloques."""
+    tmp = path + ".trim.mp3"
+    sr = "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", path, "-af",
+                    f"{sr},areverse,{sr},areverse", "-c:a", "libmp3lame", "-b:a", "192k", tmp],
+                   check=True)
+    os.replace(tmp, path)
+
+
+def synth(text: str, path: str, rate: int) -> float:
+    tts(text, path, rate)
+    trim_silence(path)
+    return duration(path)
 
 
 def fit_block(i: int, start: float, end: float, text: str) -> dict:
@@ -110,8 +132,7 @@ def fit_block(i: int, start: float, end: float, text: str) -> dict:
     path = os.path.join(OUT_DIR, f"bloque_{i}.mp3")
     target = (end - start) - TAIL
     rate = 0
-    tts(text, path, rate)
-    dur = duration(path)
+    dur = synth(text, path, rate)
     for _ in range(5):
         if dur <= target and (target - dur) <= MAX_GAP:
             break
@@ -120,8 +141,7 @@ def fit_block(i: int, start: float, end: float, text: str) -> dict:
         else:                                              # demasiado corto → ralentizar
             rate -= max(1, math.floor((1 - dur / target) * 100))
         rate = max(RATE_MIN, min(RATE_MAX, rate))
-        tts(text, path, rate)
-        dur = duration(path)
+        dur = synth(text, path, rate)
         if rate in (RATE_MIN, RATE_MAX):
             break
     if dur > (end - start):

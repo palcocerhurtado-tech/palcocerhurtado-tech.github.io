@@ -2,3 +2,6 @@ media/
 __pycache__/
 *.mp4
 render_report.txt
+# fotos de prensa: no se publican en el repositorio (derechos de autor)
+img/*
+!img/.gitkeep

@@ -66,6 +66,63 @@ Y_TL_LBL = -3.62
 Y_TL = -4.22
 CORNER_TR = np.array([3.75, 5.85, 0])
 HERE = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = os.environ.get("IMG_DIR", os.path.join(HERE, "img"))
+
+# ── Fotos reales (opcionales): plano -> nombre de archivo en img/ (.jpg/.jpeg/.png/.webp)
+# Si el archivo no existe, el plano se queda solo con los gráficos poligonales.
+PHOTOS = {
+    "b0_hook": "00_portada",
+    "b0_date": "01_tren_atocha",
+    "b0_toll": "02_homenaje",
+    "b0_files": "03_sumario",
+    "b1_perejil": "04_perejil_islote",
+    "b1_theory": "05_perejil_soldados",
+    "b2_prague": "06_cumbre_praga",
+    "b2_iraq": "07_azores",
+    "b3_villarejo": "08_villarejo",
+    "b3_rejected": "09_audiencia_nacional",
+    "b4_tedax": "10_tedax_el_pozo",
+    "b4_found": "11_mochila_vallecas",
+    "b4_xray": "12_radiografia",
+    "b5_carrete": "13_policia_cientifica",
+    "b5_leganes": "14_leganes",
+    "b5_sentence": "15_juicio_2007",
+}
+PHOTO_W, PHOTO_H, PHOTO_Y = 7.8, 4.6, 0.2
+
+
+def _find_img(stem: str):
+    for ext in (".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG"):
+        p = os.path.join(IMG_DIR, stem + ext)
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def archive_photo(stem: str, w=PHOTO_W, h=PHOTO_H, dim=0.55):
+    """Foto de archivo: recorte al formato, duotono oscuro/hueso, brillo reducido y marco.
+    Devuelve un Group (imagen + marco) o None si no hay archivo."""
+    src = _find_img(stem)
+    if src is None:
+        return None
+    from PIL import Image, ImageEnhance, ImageOps
+    out_dir = os.path.join(IMG_DIR, "_proc")
+    os.makedirs(out_dir, exist_ok=True)
+    dst = os.path.join(out_dir, f"{stem}.png")
+    if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+        im = Image.open(src).convert("RGB")
+        tw, th = int(w * 120), int(h * 120)
+        im = ImageOps.fit(im, (tw, th), method=Image.LANCZOS, centering=(0.5, 0.4))
+        g = ImageOps.autocontrast(ImageOps.grayscale(im), cutoff=1)
+        im = ImageOps.colorize(g, black="#0A0A0A", white="#E8E6E3", mid="#6E6458")
+        im = ImageEnhance.Brightness(im).enhance(dim)
+        im.save(dst)
+    img = ImageMobject(dst)
+    img.stretch_to_fit_width(w).stretch_to_fit_height(h)
+    frame = Rectangle(width=w, height=h, color=GOLD, stroke_width=3, stroke_opacity=0.8)
+    grp = Group(img, frame).move_to([0, PHOTO_Y, 0])
+    grp.set_z_index(-5)
+    return grp
 
 # hitos de la línea de tiempo poligonal
 MILESTONES = [("2002", -3.3), ("2002", -1.2), ("2004", 0.9), ("2019", 3.1)]  # Perejil, Praga, 11-M, Villarejo
@@ -109,6 +166,16 @@ class Beat:
         self.s = scene
         self.end_frame = int(round(TL[key][1] * FPS))
         self.span = max(2, self.end_frame - scene.frame_no)
+        # capa de fotos reales: entra la del plano y sale la anterior en el primer play
+        self.pending = []
+        old = getattr(scene, "cur_photo", None)
+        new = archive_photo(PHOTOS[key]) if key in PHOTOS else None
+        if old is not None:
+            self.pending.append(FadeOut(old))
+        if new is not None:
+            new.add_updater(lambda m, dt: m.scale(1 + 0.012 * dt))
+            self.pending.append(FadeIn(new, scale=1.04))
+        scene.photo_out, scene.cur_photo = old, new
 
     def left(self):
         return self.end_frame - self.s.frame_no
@@ -117,7 +184,10 @@ class Beat:
         n = max(2, int(round(f * self.span)))
         if self.left() >= 2:
             n = min(n, self.left())
+        anims = list(self.pending) + list(anims)
+        self.pending = []
         self.s.play(*anims, run_time=(n - 0.5) / FPS, **kw)
+        self.s.photo_out = None
         self.s.frame_no += n
         self.s.check_words()
 
@@ -461,6 +531,9 @@ class OcultaBase(Scene):
 
     def keep(self):
         k = [self.grain, self.mesh, self.tl]
+        for m in (getattr(self, "cur_photo", None), getattr(self, "photo_out", None)):
+            if m is not None:
+                k.append(m)
         for m in (self.stamp_mob, self.cta_overlay):
             if m is not None:
                 k.append(m)

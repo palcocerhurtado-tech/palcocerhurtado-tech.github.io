@@ -1,0 +1,104 @@
+{
+  "total": 180.0,
+  "voice": "es-ES-AlvaroNeural",
+  "rate": "-16%",
+  "atempo": 0.99053,
+  "beats": [
+    {
+      "key": "b0_hook",
+      "start": 0.0
+    },
+    {
+      "key": "b0_date",
+      "start": 3.106
+    },
+    {
+      "key": "b0_toll",
+      "start": 11.421
+    },
+    {
+      "key": "b0_names",
+      "start": 17.944
+    },
+    {
+      "key": "b0_files",
+      "start": 25.449
+    },
+    {
+      "key": "b0_cta",
+      "start": 26.649
+    },
+    {
+      "key": "b1_perejil",
+      "start": 27.849
+    },
+    {
+      "key": "b1_theory",
+      "start": 40.27
+    },
+    {
+      "key": "b1_link",
+      "start": 46.342
+    },
+    {
+      "key": "b2_prague",
+      "start": 51.003
+    },
+    {
+      "key": "b2_iraq",
+      "start": 60.593
+    },
+    {
+      "key": "b2_interp",
+      "start": 65.541
+    },
+    {
+      "key": "b3_villarejo",
+      "start": 74.058
+    },
+    {
+      "key": "b3_claim",
+      "start": 81.01
+    },
+    {
+      "key": "b3_rejected",
+      "start": 93.391
+    },
+    {
+      "key": "b3_audio",
+      "start": 101.046
+    },
+    {
+      "key": "b4_tedax",
+      "start": 106.832
+    },
+    {
+      "key": "b4_found",
+      "start": 116.36
+    },
+    {
+      "key": "b4_xray",
+      "start": 127.613
+    },
+    {
+      "key": "b5_carrete",
+      "start": 137.236
+    },
+    {
+      "key": "b5_leganes",
+      "start": 149.176
+    },
+    {
+      "key": "b5_sentence",
+      "start": 156.048
+    },
+    {
+      "key": "b6_recap",
+      "start": 165.126
+    },
+    {
+      "key": "b6_cta",
+      "start": 173.342
+    }
+  ]
+}

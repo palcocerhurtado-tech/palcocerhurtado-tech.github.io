@@ -88,7 +88,7 @@ PHOTOS = {
     "b5_leganes": "14_leganes",
     "b5_sentence": "15_juicio_2007",
 }
-PHOTO_W, PHOTO_H, PHOTO_Y = 7.8, 4.6, 0.2
+PHOTO_W, PHOTO_H, PHOTO_Y = 7.8, 4.0, 0.05
 
 
 def _find_img(stem: str):
@@ -529,6 +529,14 @@ class OcultaBase(Scene):
         if n > 8:
             self.violations.append(f"{self.frame_no / FPS:7.2f}s {n}: {who}")
 
+    def ghost(self, *mobs) -> bool:
+        """Si el plano tiene foto real, oculta los gráficos que la duplican (misma posición/tiempos)."""
+        has = getattr(self, "cur_photo", None) is not None
+        if has:
+            for m in mobs:
+                m.set_opacity(0)
+        return has
+
     def keep(self):
         k = [self.grain, self.mesh, self.tl]
         for m in (getattr(self, "cur_photo", None), getattr(self, "photo_out", None)):
@@ -682,13 +690,16 @@ def block1(s: OcultaBase):
     b.play(*s.clear(extra_keep=[cta]), FadeTransform(cta[1], c2), *s.slam("DESCLASIFICADO"), f=0.12)
     isl = islet().move_to([0, 0.6, 0])
     lab = s.name("PEREJIL", isl[2].get_center() + UP * 1.25 + LEFT * 1.6, color=GOLD, fs=52)
+    s.ghost(isl)
     h = s.head("Julio de 2002.", color=GOLD, fs=84)
     b.play(FadeOut(VGroup(cta[0], c2, cta[2]), shift=DOWN * 0.3), reveal(h), FadeIn(isl), FadeIn(lab), *s.light(0), f=0.18)
     sold = VGroup(*[soldier(0.55, ALERT_HI) for _ in range(3)]).arrange(RIGHT, buff=0.05).move_to(isl[2].get_center())
+    s.ghost(sold)
     h2 = s.head("Marruecos ocupa Perejil.", color=ALERT_HI, fs=80)
     b.play(FadeOut(h, shift=UP * 0.3), reveal(h2), LaggedStart(*[FadeIn(x, shift=UP * 0.2) for x in sold]), f=0.2)
     sp = VGroup(*[soldier(0.55, DATA) for _ in range(3)]).arrange(RIGHT, buff=0.05).move_to(isl[2].get_center())
     heli = poly([(-0.9, 0), (0.5, 0), (0.9, 0.2), (0.5, 0.4), (-0.6, 0.4)], DATA, 0.8, 0).move_to([-3.0, 2.2, 0])
+    s.ghost(sp, heli)
     h3 = s.head("España lo recupera.", color=DATA, fs=80)
     c = s.cap("OPERACIÓN ROMEO-SIERRA", color=DATA)
     b.play(FadeOut(h2, shift=UP * 0.3), reveal(h3), heli.animate.move_to(isl[2].get_center() + UP * 1.0),
@@ -700,6 +711,7 @@ def block1(s: OcultaBase):
     arc_ = CurvedArrow(s.tl_nodes[0].get_top() + UP * 0.1, s.tl_nodes[2].get_top() + UP * 0.1, angle=-1.2,
                        color=ALERT_HI, stroke_width=6)
     sol = soldier(2.6, ALERT_HI).move_to([0, 0.4, 0])
+    s.ghost(sol)
     b.play(*s.clear(), reveal(h), FadeIn(sol, shift=UP * 0.3), f=0.4)
     b.play(Create(arc_), Indicate(s.tl_nodes[2], color=ALERT_HI, scale_factor=1.6), f=0.4)
     b.finish(sol)
@@ -721,6 +733,7 @@ def block2(s: OcultaBase):
     star = VGroup(*[poly([(0, 0), (0.22, 0.22 if k % 2 else 0.12), (0, 1.3 if k % 2 == 0 else 0.8)], DATA, 0.85, 0)
                     .rotate(k * PI / 4, about_point=ORIGIN) for k in range(8)]).scale(0.72).move_to([0, 1.05, 0])
     leaders = VGroup(*[bust(1.0, TXT if k != 2 else GOLD) for k in range(5)]).arrange(RIGHT, buff=0.12).move_to([0, -0.95, 0])
+    s.ghost(star, leaders)
     h = s.head("Noviembre de 2002.", color=DATA, fs=84)
     b.play(*s.clear(), *s.slam("CLASIFICADO"), reveal(h), GrowFromCenter(star), *s.light(1), f=0.2)
     h2 = s.head("Cumbre de la OTAN en Praga.", color=TXT, fs=76)
@@ -739,10 +752,15 @@ def block2(s: OcultaBase):
     n2 = s.name("IRAK", [2.4, 0.35, 0], color=ALERT_HI, fs=48)
     n3 = s.name("ESPAÑA", [0, -1.55, 0], color=GOLD, fs=52)
     h = s.head("Dos frentes abiertos.", color=TXT, fs=84)
-    b.play(*s.clear(), reveal(h), DrawBorderThenFill(ma), DrawBorderThenFill(iq), FadeIn(n1), FadeIn(n2), f=0.4)
     lines = VGroup(Line(ma.get_center(), sp.get_center(), color=ALERT_HI, stroke_width=4),
                    Line(iq.get_center(), sp.get_center(), color=ALERT_HI, stroke_width=4))
-    b.play(Create(lines), GrowFromCenter(sp), FadeIn(n3), f=0.4)
+    if s.ghost(ma, iq, sp, lines, n1, n2, n3):
+        cfr = s.cap("MARRUECOS · IRAK · ESPAÑA", color=ALERT_HI)
+        b.play(*s.clear(), reveal(h), f=0.4)
+        b.play(FadeIn(cfr, shift=UP * 0.2), f=0.4)
+    else:
+        b.play(*s.clear(), reveal(h), DrawBorderThenFill(ma), DrawBorderThenFill(iq), FadeIn(n1), FadeIn(n2), f=0.4)
+        b.play(Create(lines), GrowFromCenter(sp), FadeIn(n3), f=0.4)
     b.finish(sp)
 
     b = Beat(s, "b2_interp")
@@ -771,9 +789,10 @@ def block3(s: OcultaBase):
     shadow = VGroup(*[Line([-4, y, 0], [4, y, 0], color=DIM, stroke_width=2, stroke_opacity=0.5)
                       for y in np.arange(-1.6, 2.4, 0.22)])
     h = s.head("El excomisario Villarejo.", color=GOLD, fs=80)
+    s.ghost(v, shadow)
     b.play(*s.clear(), *s.slam("DESCLASIFICADO"), FadeIn(shadow), reveal(h), FadeIn(v, shift=UP * 0.3), f=0.4)
     c = s.cap("LAS CLOACAS DEL ESTADO", color=TXT)
-    b.play(FadeIn(c, shift=UP * 0.2), shadow.animate.set_stroke(opacity=0.25), f=0.3)
+    b.play(FadeIn(c, shift=UP * 0.2), shadow.animate.set_stroke(opacity=0 if s.cur_photo else 0.25), f=0.3)
     b.finish(v)
 
     b = Beat(s, "b3_claim")
@@ -790,7 +809,7 @@ def block3(s: OcultaBase):
     b = Beat(s, "b3_rejected")
     seal = court_seal().move_to([0, 0.6, 0])
     h = s.head("Conjeturas sin base documental.", color=TXT, fs=76)
-    b.play(*s.clear(), reveal(h), DrawBorderThenFill(seal), f=0.35)
+    b.play(*s.clear(), reveal(h), FadeIn(seal) if s.ghost(seal) else DrawBorderThenFill(seal), f=0.35)
     st = stamp("RECHAZADO", ALERT_HI, fs=72, angle=-12).move_to([0, 0.5, 0])
     s.reg(st[1], 1)
     c = s.cap("GARCÍA-CASTELLÓN · FISCALÍA", color=GOLD)
@@ -827,9 +846,10 @@ def block4(s: OcultaBase):
     nm = s.cap("PUENTE DE VALLECAS", color=TXT, y=-0.6)
     bp = backpack(GOLD).scale(0.8).move_to([2.2, 0.75, 0])
     h = s.head("Apareció de madrugada.", color=GOLD, fs=80)
-    b.play(*s.clear(), reveal(h), FadeIn(st), FadeIn(nm), FadeIn(bp, shift=DOWN * 0.3), f=0.25)
     boom = poly([(-0.3, -0.15), (0.3, -0.15), (0.3, 0.15), (-0.3, 0.15)], ALERT_HI, 0.9, 0).move_to(bp.get_center())
     ph = phone().move_to(bp.get_center() + RIGHT * 0.05 + DOWN * 0.1)
+    s.ghost(st, bp, boom, ph)
+    b.play(*s.clear(), reveal(h), FadeIn(st), FadeIn(nm), FadeIn(bp, shift=DOWN * 0.3), f=0.25)
     c = s.cap("EXPLOSIVO · TELÉFONO MÓVIL", color=ALERT_HI)
     b.play(bp.animate.shift(UP * 0.5), FadeIn(boom), FadeIn(ph), FadeIn(c), FadeOut(nm), f=0.25)
     z = bust(1.5, ALERT_HI).move_to([2.2, -1.2, 0])
@@ -846,8 +866,12 @@ def block4(s: OcultaBase):
                    Line([0.4, 0.5, 0], [0.6, -0.3, 0], color=DATA, stroke_width=4)).shift(UP * 0.4)
     loose = Line([-0.5, -0.4, 0], [-0.1, -0.15, 0], color=ALERT_HI, stroke_width=7).shift(UP * 0.4)
     h = s.head("La radiografía: un cable suelto.", color=DATA, fs=72)
-    b.play(*s.clear(), reveal(h), FadeIn(panel), FadeIn(ghost), Create(wires), f=0.25)
-    b.play(Create(loose), Flash(loose.get_end(), color=ALERT_HI, line_length=0.3), f=0.15)
+    if s.ghost(panel, ghost, wires, loose):
+        b.play(*s.clear(), reveal(h), f=0.25)
+        b.play(Indicate(s.cur_photo[1], color=ALERT_HI), f=0.15)
+    else:
+        b.play(*s.clear(), reveal(h), FadeIn(panel), FadeIn(ghost), Create(wires), f=0.25)
+        b.play(Create(loose), Flash(loose.get_end(), color=ALERT_HI, line_length=0.3), f=0.15)
     h2 = s.head("Más de 3 meses sin llegar al juez.", color=GOLD, fs=70)
     cross = VGroup(Line(panel.get_corner(UL), panel.get_corner(DR), color=ALERT_HI, stroke_width=10),
                    Line(panel.get_corner(UR), panel.get_corner(DL), color=ALERT_HI, stroke_width=10))
@@ -882,9 +906,11 @@ def block5(s: OcultaBase):
 
     b = Beat(s, "b5_leganes")
     bld = building(TXT, 3.6, 3.0).move_to([0, 0.6, 0])
+    s.ghost(bld)
     h = s.head("Leganés.", color=TXT, fs=100)
     b.play(*s.clear(), reveal(h), FadeIn(bld, shift=UP * 0.3), f=0.3)
     bz = burst(ALERT_HI, 1.0).move_to(bld.get_center() + UP * 0.4)
+    s.ghost(bz)
     c = s.cap("SIETE SUICIDAS · UN GEO MUERTO", color=ALERT_HI)
     b.play(GrowFromCenter(bz), FadeIn(c), bld.animate.set_color(DIM), f=0.35)
     b.finish(bld)
@@ -893,7 +919,7 @@ def block5(s: OcultaBase):
     seal = court_seal(GOLD).move_to([0, 1.0, 0])
     h = s.head("2007: 21 condenados.", color=GOLD, fs=84)
     c = s.cap("CÉLULA YIHADISTA", color=TXT, y=-0.95)
-    b.play(*s.clear(), reveal(h), DrawBorderThenFill(seal), FadeIn(c), f=0.25)
+    b.play(*s.clear(), reveal(h), FadeIn(seal) if s.ghost(seal) else DrawBorderThenFill(seal), FadeIn(c), f=0.25)
     pz = VGroup(puzzle(GOLD), puzzle(DATA).rotate(PI / 2), puzzle(ALERT_HI).rotate(PI)).arrange(RIGHT, buff=0.6)
     pz.move_to([0, 0.6, 0])
     h2 = s.head("Piezas que no encajan.", color=TXT, fs=80)
